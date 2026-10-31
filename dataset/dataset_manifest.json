@@ -1,0 +1,59 @@
+{
+  "project": "ROOTGUARD",
+  "dataset_version": "1.0.0",
+  "target_crop": "Areca catechu (Arecanut Palm)",
+  "organ_target": "Root System",
+  "classes": [
+    {
+      "id": "healthy_arecanut_roots",
+      "display_name": "Healthy Arecanut Roots",
+      "verified_count": 320,
+      "split": { "train": 224, "val": 48, "test": 48 },
+      "primary_source": "ICAR-CPCRI Vittal Regional Station & Field Survey"
+    },
+    {
+      "id": "ganoderma_root_rot",
+      "display_name": "Ganoderma Root and Foot Rot (Anabe Roga)",
+      "verified_count": 285,
+      "split": { "train": 200, "val": 42, "test": 43 },
+      "primary_source": "ICAR-CPCRI Pathological Herbarium Specimens"
+    },
+    {
+      "id": "fusarium_root_decay",
+      "display_name": "Fusarium Root Decay",
+      "verified_count": 260,
+      "split": { "train": 182, "val": 39, "test": 39 },
+      "primary_source": "TNAU Soil-borne Fungal Repository"
+    },
+    {
+      "id": "yellow_leaf_root_damage",
+      "display_name": "Yellow Leaf Disease-Associated Root Damage",
+      "verified_count": 240,
+      "split": { "train": 168, "val": 36, "test": 36 },
+      "primary_source": "CPCRI Sringeri High-Incidence Plantation Survey"
+    },
+    {
+      "id": "root_grub_damage",
+      "display_name": "Root Grub Damage (White Grub)",
+      "verified_count": 290,
+      "split": { "train": 203, "val": 43, "test": 44 },
+      "primary_source": "AICRP Palms Grub Damage Field Trials"
+    },
+    {
+      "id": "nematode_root_damage",
+      "display_name": "Nematode-Associated Root Damage",
+      "verified_count": 215,
+      "split": { "train": 151, "val": 32, "test": 32 },
+      "primary_source": "ICAR-CPCRI Nematology Specimen Collection"
+    },
+    {
+      "id": "invalid_images",
+      "display_name": "Invalid Out-of-Distribution Rejection Set",
+      "verified_count": 450,
+      "split": { "train": 315, "val": 67, "test": 68 },
+      "primary_source": "Negative Controls (Leaves, Fruits, Coconut, Mango, Soil Clutter)"
+    }
+  ],
+  "total_specimens": 2060,
+  "annotation_standard": "ICAR-CPCRI Plant Pathology Criteria"
+}
