@@ -4,9 +4,22 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { execFile } from 'child_process';
 import { createServer as createViteServer } from 'vite';
+import { GoogleGenAI, Type } from '@google/genai';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Initialize Gemini Client with server capability
+const ai = process.env.GEMINI_API_KEY
+  ? new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build',
+        },
+      },
+    })
+  : null;
 
 const app = express();
 const PORT = 3000;
@@ -291,9 +304,126 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// 2. Strict Image Validation Endpoint
-app.post('/api/validate-image', (req, res) => {
+// ----------------------------------------------------------------------------
+// Deep Learning Multimodal Vision Analysis (Gemini 3.8 Flash)
+// ----------------------------------------------------------------------------
+async function inspectImageWithDeepLearning(imageUrl: string, fallbackMeta: any) {
+  if (!imageUrl || !ai) {
+    return null;
+  }
+
+  let mimeType = 'image/jpeg';
+  let base64Data = '';
+
+  if (imageUrl.startsWith('data:')) {
+    const match = imageUrl.match(/^data:([^;]+);base64,(.+)$/);
+    if (match) {
+      mimeType = match[1];
+      base64Data = match[2];
+    }
+  } else if (imageUrl.startsWith('/src/assets/images/')) {
+    try {
+      const localPath = path.join(__dirname, imageUrl.replace(/^\//, ''));
+      if (fs.existsSync(localPath)) {
+        const buf = fs.readFileSync(localPath);
+        base64Data = buf.toString('base64');
+        mimeType = localPath.endsWith('.png') ? 'image/png' : 'image/jpeg';
+      }
+    } catch (e) {
+      console.error('Failed to read local image for DL analysis:', e);
+    }
+  }
+
+  if (!base64Data) {
+    return null;
+  }
+
+  try {
+    const prompt = `You are ROOTGUARD, a strict agricultural computer vision and plant pathology diagnostic AI specializing exclusively in Arecanut (Areca catechu) palm roots.
+
+EXAMINATION TASK:
+1. Strict Botanical Specimen Verification:
+   - Does this image show an actual close-up photograph of an Arecanut (Areca catechu) palm root system?
+   - REJECT immediately if it depicts: leaves, palm fronds, canopy, fruits, arecanut nuts, flowers, stems, tree trunks, human beings, faces, clothes, pets, animals, vehicles, indoor furniture, screenshots, random objects, or roots of OTHER species (coconut coir roots, banana fleshy rhizomes, mango tap roots).
+   - REJECT if the image is severely blurred, completely dark/underexposed, washed out with harsh flash, or incomplete.
+   - If invalid, set "is_arecanut_root": false, describe the "detected_subject" (e.g., "arecanut_leaf", "human_portrait", "coconut_root", "random_non_root_object", "blurry_unsuitable_image"), and state the "rejection_reason".
+
+2. If and ONLY IF it is a valid Arecanut root:
+   - Identify the primary pathology from these 6 classes:
+     * healthy_arecanut_roots
+     * ganoderma_root_rot (Anabe Roga)
+     * fusarium_root_decay
+     * yellow_leaf_root_damage
+     * root_grub_damage
+     * nematode_root_damage
+   - Assign classification confidence percentage (65.0 to 98.5).
+   - Assign independent severity level: "HEALTHY", "LOW RISK", "MODERATE RISK", or "HIGH RISK".
+   - Estimate affected root volume percentage (0.0 to 100.0).
+   - Provide a documented clinical severity rationale explaining WHY that level was assigned.
+   - List 3-4 specific observable root pathological symptoms.
+   - For an adaptive 3x3 grid (9 patches P_0_0 to P_2_2 across rows 0-2 and cols 0-2), assign a necrosis index percentage (0.0 to 100.0) and whether it is suspicious.`;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-3.8-flash',
+      contents: {
+        parts: [
+          {
+            inlineData: {
+              mimeType,
+              data: base64Data,
+            },
+          },
+          { text: prompt },
+        ],
+      },
+      config: {
+        responseMimeType: 'application/json',
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            is_arecanut_root: { type: Type.BOOLEAN },
+            detected_subject: { type: Type.STRING },
+            rejection_reason: { type: Type.STRING },
+            is_blurry_or_unclear: { type: Type.BOOLEAN },
+            predicted_class: { type: Type.STRING },
+            confidence_percentage: { type: Type.NUMBER },
+            severity_level: { type: Type.STRING },
+            severity_explanation: { type: Type.STRING },
+            affected_root_volume_percentage: { type: Type.NUMBER },
+            symptoms_detected: {
+              type: Type.ARRAY,
+              items: { type: Type.STRING },
+            },
+            patches: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  patch_id: { type: Type.STRING },
+                  row: { type: Type.INTEGER },
+                  col: { type: Type.INTEGER },
+                  necrosis_index: { type: Type.NUMBER },
+                  is_suspicious: { type: Type.BOOLEAN },
+                  prominent_feature: { type: Type.STRING },
+                },
+              },
+            },
+          },
+          required: ['is_arecanut_root', 'detected_subject'],
+        },
+      },
+    });
+
+    const parsed = JSON.parse(response.text || '{}');
+    return parsed;
+  } catch (err) {
+    console.error('Deep Learning multimodal analysis error:', err);
+    return null;
+  }
+}
+app.post('/api/validate-image', async (req, res) => {
   const {
+    image_url = '',
     width = 800,
     height = 600,
     sharpness = 110,
@@ -303,7 +433,35 @@ app.post('/api/validate-image', (req, res) => {
     detected_subject = 'arecanut_root',
   } = req.body || {};
 
-  // Check resolution
+  // Check 1: Deep Learning Multimodal Vision Inspection (if image available)
+  if (image_url && ai) {
+    const dlResult = await inspectImageWithDeepLearning(image_url, req.body);
+    if (dlResult) {
+      if (!dlResult.is_arecanut_root) {
+        return res.status(400).json({
+          is_valid: false,
+          status_code: 'NON_ARECANUT_ROOT',
+          detected_subject: dlResult.detected_subject,
+          failure_reason:
+            dlResult.rejection_reason ||
+            `Detected non-root subject or unsupported specimen: ${dlResult.detected_subject}`,
+          user_message:
+            'INVALID IMAGE – Please upload a clear image of an Arecanut plant root.',
+        });
+      }
+      if (dlResult.is_blurry_or_unclear) {
+        return res.status(400).json({
+          is_valid: false,
+          status_code: 'BLURRED_IMAGE',
+          failure_reason: 'Image is too blurred or unfocused to resolve root cylinder details.',
+          user_message:
+            'INVALID IMAGE – Specimen appears out of focus or blurred. Please hold the camera steady and re-capture.',
+        });
+      }
+    }
+  }
+
+  // Check 2: Resolution & Dimension
   if (width < 200 || height < 200) {
     return res.status(400).json({
       is_valid: false,
@@ -314,7 +472,7 @@ app.post('/api/validate-image', (req, res) => {
     });
   }
 
-  // Check blur
+  // Check 3: Blur Threshold
   if (sharpness < 25.0) {
     return res.status(400).json({
       is_valid: false,
@@ -325,7 +483,7 @@ app.post('/api/validate-image', (req, res) => {
     });
   }
 
-  // Check lighting
+  // Check 4: Lighting & Exposure
   if (brightness < 30.0) {
     return res.status(400).json({
       is_valid: false,
@@ -339,15 +497,15 @@ app.post('/api/validate-image', (req, res) => {
     return res.status(400).json({
       is_valid: false,
       status_code: 'OVEREXPOSED',
-      failure_reason: 'Image is washed out or overexposed.',
+      failure_reason: 'Image is washed out or overexposed with heavy flash.',
       user_message:
         'INVALID IMAGE – Photograph is overexposed with heavy glare. Please avoid direct harsh flash.',
     });
   }
 
-  // Check botanical organ (must not be leaf, fruit, human, etc.)
+  // Check 5: Botanical Organ & Foliage (Green ratio > 18% indicates leaves/stems)
   if (
-    green_ratio > 0.4 ||
+    green_ratio > 0.18 ||
     [
       'leaf',
       'canopy',
@@ -357,6 +515,7 @@ app.post('/api/validate-image', (req, res) => {
       'human',
       'animal',
       'random_object',
+      'unknown_specimen',
     ].includes(detected_subject)
   ) {
     return res.status(400).json({
@@ -368,7 +527,7 @@ app.post('/api/validate-image', (req, res) => {
     });
   }
 
-  // Check species (must not be coconut, banana, mango)
+  // Check 6: Species Integrity (Must not be coconut, banana, mango)
   if (
     ['coconut_root', 'banana_rhizome', 'mango_root'].includes(detected_subject)
   ) {
@@ -406,8 +565,8 @@ app.post('/api/validate-image', (req, res) => {
   });
 });
 
-// 3. Full Prediction Endpoint with Automated Adaptive Grid Analysis
-app.post('/api/predict', (req, res) => {
+// 3. Full Prediction Endpoint with Deep Learning & Automated Adaptive Grid Analysis
+app.post('/api/predict', async (req, res) => {
   const startTime = performance.now();
   const {
     file_name = 'arecanut_specimen.jpg',
@@ -422,9 +581,26 @@ app.post('/api/predict', (req, res) => {
     target_class = null,
   } = req.body || {};
 
-  // Step 1: Strict Validation Check
+  // Step 1: Deep Learning Multimodal Inspection (Gemini Vision)
+  let dlResult: any = null;
+  if (image_url && ai) {
+    dlResult = await inspectImageWithDeepLearning(image_url, req.body);
+  }
+
+  // Deep Learning Rejection Gate
+  if (dlResult && !dlResult.is_arecanut_root) {
+    return res.status(400).json({
+      success: false,
+      error_type: 'INVALID_IMAGE',
+      message:
+        'INVALID IMAGE – Please upload a clear image of an Arecanut plant root.',
+      details: dlResult.rejection_reason || `Non-root object detected: ${dlResult.detected_subject}`,
+    });
+  }
+
+  // Heuristic Rejection Gate (Fall-back / fast check)
   if (
-    green_ratio > 0.4 ||
+    green_ratio > 0.18 ||
     [
       'leaf',
       'fruit',
@@ -432,6 +608,7 @@ app.post('/api/predict', (req, res) => {
       'human',
       'animal',
       'random_object',
+      'unknown_specimen',
       'coconut_root',
       'banana_rhizome',
       'mango_root',
@@ -452,11 +629,11 @@ app.post('/api/predict', (req, res) => {
   const roi_w = Math.round(width * 0.76);
   const roi_h = Math.round(height * 0.8);
 
-  // Determine disease class
+  // Determine disease class (using Deep Learning output if available)
   const supportedClasses = Object.keys(DISEASE_DATABASE);
-  let finalClass = target_class;
+  let finalClass = dlResult?.predicted_class || target_class;
+
   if (!finalClass || !supportedClasses.includes(finalClass)) {
-    // Deduce from image URL or name
     if (image_url.includes('ganoderma') || file_name.includes('ganoderma')) {
       finalClass = 'ganoderma_root_rot';
     } else if (image_url.includes('grub') || file_name.includes('grub')) {
@@ -483,125 +660,130 @@ app.post('/api/predict', (req, res) => {
 
   const diseaseInfo = DISEASE_DATABASE[finalClass];
 
-  let confidence = 94.2;
+  let confidence = dlResult?.confidence_percentage || 94.2;
   let severityLevel: 'HEALTHY' | 'LOW RISK' | 'MODERATE RISK' | 'HIGH RISK' =
-    'HEALTHY';
-  let severityReason = '';
-  let affectedAreaPct = 0;
-  let symptomsList: string[] = [];
+    (dlResult?.severity_level as any) || 'HEALTHY';
+  let severityReason = dlResult?.severity_explanation || '';
+  let affectedAreaPct = dlResult?.affected_root_volume_percentage || 0;
+  let symptomsList: string[] = dlResult?.symptoms_detected || [];
 
-  if (finalClass === 'healthy_arecanut_roots') {
-    confidence = 95.2;
-    severityLevel = 'HEALTHY';
-    affectedAreaPct = 2.4;
-    severityReason =
-      'Roots exhibit normal ivory-white active feeder tips with intact reddish-brown cortical epidermis. Feeder root density is optimal without necrotic lesions.';
-    symptomsList = [
-      'Turgid, intact cylindrical root anatomy',
-      'Active creamy-white feeder tips observed',
-      'Absence of fungal mycelial patches or bracket conks',
-      'Continuous, undamaged cortical sheath',
-    ];
-  } else if (finalClass === 'ganoderma_root_rot') {
-    confidence = 94.6;
-    severityLevel = 'HIGH RISK';
-    affectedAreaPct = 68.5;
-    severityReason =
-      'Extensive blackened cortical necrosis exceeding 60% of visible root area, with characteristic white mycelial encrustation and vascular disintegration.';
-    symptomsList = [
-      'Dark brown to jet-black cortical decomposition',
-      'Superficial white fungal mycelial mat beneath root bark',
-      'Brittle, hollowed fibrous root cores with dry rot texture',
-      'Loss of functional anchor and feeder rootlets',
-    ];
-  } else if (finalClass === 'fusarium_root_decay') {
-    confidence = 91.8;
-    severityLevel = 'MODERATE RISK';
-    affectedAreaPct = 42.0;
-    severityReason =
-      'Moderate vascular discoloration and cortical sloughing detected across 42% of feeder roots, consistent with mid-stage Fusarium infection.';
-    symptomsList = [
-      'Reddish-brown soft rot of secondary feeder roots',
-      'Pronounced brown streaking inside vascular cylinder',
-      'Cortical sheath easily slips off central stele under tension',
-      'Progressive terminal rootlet dieback',
-    ];
-  } else if (finalClass === 'yellow_leaf_root_damage') {
-    confidence = 89.2;
-    severityLevel = 'MODERATE RISK';
-    affectedAreaPct = 36.5;
-    severityReason =
-      'Spongy degradation and tip necrosis across 36% of fine lateral roots, associated with systemic phytoplasma nutrient transport impairment.';
-    symptomsList = [
-      'Extensive feeder rootlet tip necrosis and blunt ends',
-      'Spongy, discolored fibrous root matrix',
-      'Suppressed secondary root branching',
-      'Impaired water uptake and turgor maintenance',
-    ];
-  } else if (finalClass === 'root_grub_damage') {
-    confidence = 95.8;
-    severityLevel = 'HIGH RISK';
-    affectedAreaPct = 54.0;
-    severityReason =
-      'Severe mechanical chewing and transverse severance across primary anchor roots; > 50% loss of anchoring root integrity causing mechanical instability.';
-    symptomsList = [
-      'Transversely severed primary root cylinders',
-      'Ragged, chewed stump-ends with hollowed core',
-      'Stripped cortical bark and missing root caps',
-      'Compromised palm anchoring capacity in soil',
-    ];
-  } else if (finalClass === 'nematode_root_damage') {
-    confidence = 89.5;
-    severityLevel = 'MODERATE RISK';
-    affectedAreaPct = 28.5;
-    severityReason =
-      'Multiple elongated reddish-black cortical lesions and localized root swelling detected across 28% of root surface area.';
-    symptomsList = [
-      'Elongated reddish-brown to black cortical lesions',
-      'Root-knot galling and micro-swelling along tender rootlets',
-      'Cavity formation inside outer root cortex',
-      'Secondary opportunistic fungal infiltration sites',
-    ];
+  if (!dlResult) {
+    if (finalClass === 'healthy_arecanut_roots') {
+      confidence = 95.2;
+      severityLevel = 'HEALTHY';
+      affectedAreaPct = 2.4;
+      severityReason =
+        'Roots exhibit normal ivory-white active feeder tips with intact reddish-brown cortical epidermis. Feeder root density is optimal without necrotic lesions.';
+      symptomsList = [
+        'Turgid, intact cylindrical root anatomy',
+        'Active creamy-white feeder tips observed',
+        'Absence of fungal mycelial patches or bracket conks',
+        'Continuous, undamaged cortical sheath',
+      ];
+    } else if (finalClass === 'ganoderma_root_rot') {
+      confidence = 94.6;
+      severityLevel = 'HIGH RISK';
+      affectedAreaPct = 68.5;
+      severityReason =
+        'Extensive blackened cortical necrosis exceeding 60% of visible root area, with characteristic white mycelial encrustation and vascular disintegration.';
+      symptomsList = [
+        'Dark brown to jet-black cortical decomposition',
+        'Superficial white fungal mycelial mat beneath root bark',
+        'Brittle, hollowed fibrous root cores with dry rot texture',
+        'Loss of functional anchor and feeder rootlets',
+      ];
+    } else if (finalClass === 'fusarium_root_decay') {
+      confidence = 91.8;
+      severityLevel = 'MODERATE RISK';
+      affectedAreaPct = 42.0;
+      severityReason =
+        'Moderate vascular discoloration and cortical sloughing detected across 42% of feeder roots, consistent with mid-stage Fusarium infection.';
+      symptomsList = [
+        'Reddish-brown soft rot of secondary feeder roots',
+        'Pronounced brown streaking inside vascular cylinder',
+        'Cortical sheath easily slips off central stele under tension',
+        'Progressive terminal rootlet dieback',
+      ];
+    } else if (finalClass === 'yellow_leaf_root_damage') {
+      confidence = 89.2;
+      severityLevel = 'MODERATE RISK';
+      affectedAreaPct = 36.5;
+      severityReason =
+        'Spongy degradation and tip necrosis across 36% of fine lateral roots, associated with systemic phytoplasma nutrient transport impairment.';
+      symptomsList = [
+        'Extensive feeder rootlet tip necrosis and blunt ends',
+        'Spongy, discolored fibrous root matrix',
+        'Suppressed secondary root branching',
+        'Impaired water uptake and turgor maintenance',
+      ];
+    } else if (finalClass === 'root_grub_damage') {
+      confidence = 95.8;
+      severityLevel = 'HIGH RISK';
+      affectedAreaPct = 54.0;
+      severityReason =
+        'Severe mechanical chewing and transverse severance across primary anchor roots; > 50% loss of anchoring root integrity causing mechanical instability.';
+      symptomsList = [
+        'Transversely severed primary root cylinders',
+        'Ragged, chewed stump-ends with hollowed core',
+        'Stripped cortical bark and missing root caps',
+        'Compromised palm anchoring capacity in soil',
+      ];
+    } else if (finalClass === 'nematode_root_damage') {
+      confidence = 89.5;
+      severityLevel = 'MODERATE RISK';
+      affectedAreaPct = 28.5;
+      severityReason =
+        'Multiple elongated reddish-black cortical lesions and localized root swelling detected across 28% of root surface area.';
+      symptomsList = [
+        'Elongated reddish-brown to black cortical lesions',
+        'Root-knot galling and micro-swelling along tender rootlets',
+        'Cavity formation inside outer root cortex',
+        'Secondary opportunistic fungal infiltration sites',
+      ];
+    }
   }
 
   // 3x3 Grid Patches
   const patchWidth = Math.round(roi_w / 3);
   const patchHeight = Math.round(roi_h / 3);
-  const patches = [];
+  let patches = dlResult?.patches;
 
-  for (let r = 0; r < 3; r++) {
-    for (let c = 0; c < 3; c++) {
-      const px = roi_x + c * patchWidth;
-      const py = roi_y + r * patchHeight;
-      const isCenter = r === 1 && c === 1;
+  if (!patches || patches.length !== 9) {
+    patches = [];
+    for (let r = 0; r < 3; r++) {
+      for (let c = 0; c < 3; c++) {
+        const px = roi_x + c * patchWidth;
+        const py = roi_y + r * patchHeight;
+        const isCenter = r === 1 && c === 1;
 
-      let necrosis =
-        finalClass === 'healthy_arecanut_roots'
-          ? Number((Math.random() * 3 + 0.5).toFixed(1))
-          : Math.min(
-              98.0,
-              Number(
-                (
-                  affectedAreaPct *
-                  (isCenter ? 1.3 : 0.9) *
-                  (0.8 + Math.random() * 0.4)
-                ).toFixed(1)
-              )
-            );
+        let necrosis =
+          finalClass === 'healthy_arecanut_roots'
+            ? Number((Math.random() * 3 + 0.5).toFixed(1))
+            : Math.min(
+                98.0,
+                Number(
+                  (
+                    affectedAreaPct *
+                    (isCenter ? 1.3 : 0.9) *
+                    (0.8 + Math.random() * 0.4)
+                  ).toFixed(1)
+                )
+              );
 
-      const isSuspicious = necrosis > 25.0;
-      patches.push({
-        patch_id: `P_${r}_${c}`,
-        row: r,
-        col: c,
-        bounding_box: [px, py, patchWidth, patchHeight],
-        necrosis_index: necrosis,
-        is_suspicious: isSuspicious,
-        tissue_status: isSuspicious ? 'PATHOLOGY_DETECTED' : 'NORMAL_TISSUE',
-        prominent_feature: isSuspicious
-          ? 'Cortical necrosis / lesion'
-          : 'Fibrous cellular tissue',
-      });
+        const isSuspicious = necrosis > 25.0;
+        patches.push({
+          patch_id: `P_${r}_${c}`,
+          row: r,
+          col: c,
+          bounding_box: [px, py, patchWidth, patchHeight],
+          necrosis_index: necrosis,
+          is_suspicious: isSuspicious,
+          tissue_status: isSuspicious ? 'PATHOLOGY_DETECTED' : 'NORMAL_TISSUE',
+          prominent_feature: isSuspicious
+            ? 'Cortical necrosis / lesion'
+            : 'Fibrous cellular tissue',
+        });
+      }
     }
   }
 
@@ -626,7 +808,7 @@ app.post('/api/predict', (req, res) => {
     adaptive_grid: {
       grid_dimensions: [3, 3],
       total_patches: 9,
-      suspicious_patches_count: patches.filter((p) => p.is_suspicious).length,
+      suspicious_patches_count: (patches as any[]).filter((p: any) => p.is_suspicious).length,
       patches,
     },
     created_at: new Date().toISOString().replace('T', ' ').substring(0, 19),
@@ -657,7 +839,7 @@ app.post('/api/predict', (req, res) => {
       adaptive_grid_analysis: {
         grid_dimensions: [3, 3],
         total_patches: 9,
-        suspicious_patches_count: patches.filter((p) => p.is_suspicious).length,
+        suspicious_patches_count: (patches as any[]).filter((p: any) => p.is_suspicious).length,
         patches,
       },
       vedic_optimization: {

@@ -187,19 +187,96 @@ export const DiagnosticView: React.FC<DiagnosticViewProps> = ({ initialSampleKey
 
       const img = new Image();
       img.onload = () => {
+        // Real Computer Vision Pixel Extraction via HTML5 Canvas
+        let greenRatio = 0.04;
+        let brightness = 115;
+        let nonRootColorRatio = 0.0;
+        let estimatedSharpness = 110;
+        let detectedSubject = 'arecanut_root';
+        let rootLikeness = 0.85;
+
+        try {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          const sampleW = 200;
+          const sampleH = 200;
+          canvas.width = sampleW;
+          canvas.height = sampleH;
+
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, sampleW, sampleH);
+            const imgData = ctx.getImageData(0, 0, sampleW, sampleH);
+            const data = imgData.data;
+            const totalPixels = data.length / 4;
+
+            let totalGreen = 0;
+            let totalLum = 0;
+            let totalNonRoot = 0;
+            let edgeDiffSum = 0;
+
+            for (let i = 0; i < data.length; i += 4) {
+              const r = data[i];
+              const g = data[i + 1];
+              const b = data[i + 2];
+              const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+              totalLum += lum;
+
+              // Foliage / chlorophyll green check
+              if (g > r * 1.15 && g > b * 1.15 && g > 45) {
+                totalGreen++;
+              }
+
+              // Non-root synthetic or unrelated spectrum (sky blue, magenta, clothes, skin)
+              const isBlue = b > r * 1.25 && b > g * 1.25 && b > 60;
+              const isMagenta = r > 180 && b > 160 && g < 120;
+              if (isBlue || isMagenta) {
+                totalNonRoot++;
+              }
+
+              // Simple edge gradient variance
+              if (i + 8 < data.length) {
+                const nextLum = 0.299 * data[i + 4] + 0.587 * data[i + 5] + 0.114 * data[i + 6];
+                edgeDiffSum += Math.abs(lum - nextLum);
+              }
+            }
+
+            greenRatio = Number((totalGreen / totalPixels).toFixed(3));
+            brightness = Number((totalLum / totalPixels).toFixed(1));
+            nonRootColorRatio = Number((totalNonRoot / totalPixels).toFixed(3));
+            estimatedSharpness = Math.min(200, Math.max(10, Math.round(edgeDiffSum / (totalPixels * 0.2))));
+
+            // Computer Vision Botanical Organ Check
+            if (greenRatio > 0.18) {
+              detectedSubject = 'leaf';
+              rootLikeness = 0.12;
+            } else if (nonRootColorRatio > 0.12) {
+              detectedSubject = 'random_object';
+              rootLikeness = 0.25;
+            } else if (brightness < 30) {
+              detectedSubject = 'arecanut_root';
+              rootLikeness = 0.70;
+            } else {
+              detectedSubject = 'arecanut_root';
+              rootLikeness = 0.88;
+            }
+          }
+        } catch (cvErr) {
+          console.warn('Canvas pixel extraction notice:', cvErr);
+        }
+
         setImageMeta({
           key: 'uploaded',
           label: 'Custom User Upload',
-          tag: 'Field Upload',
+          tag: 'Field Specimen',
           description: file.name,
           imageUrl: result,
           fileName: file.name,
           targetClass: null,
-          detectedSubject: 'arecanut_root',
-          greenRatio: 0.05,
-          rootLikeness: 0.88,
-          sharpness: 110,
-          brightness: 115,
+          detectedSubject,
+          greenRatio,
+          rootLikeness,
+          sharpness: estimatedSharpness,
+          brightness,
         });
       };
       img.src = result;
@@ -222,12 +299,14 @@ export const DiagnosticView: React.FC<DiagnosticViewProps> = ({ initialSampleKey
       setActivePipelineStep(2);
       await new Promise((r) => setTimeout(r, 250));
 
-      // Step 3: Botanical Arecanut Root Validation
+      // Step 3: Botanical Arecanut Root Validation (Passes real image_url and pixel analysis)
       setActivePipelineStep(3);
       const valRes = await fetch('/api/validate-image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          image_url: selectedImage,
+          file_name: imageFileName,
           width: 800,
           height: 600,
           sharpness: imageMeta.sharpness,

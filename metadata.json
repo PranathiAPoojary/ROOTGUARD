@@ -2,5 +2,7 @@
   "name": "RootGuard",
   "description": "AI-based early prediction and automated diagnostic system for Arecanut root diseases.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }
