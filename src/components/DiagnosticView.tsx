@@ -1,6 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { PredictionResult, DiseaseInfo } from '../types';
 import { VisualRootInspector } from './VisualRootInspector';
+import healthyRootImg from '../assets/images/arecanut_healthy_roots_1793441543488.jpg';
+import ganodermaRotImg from '../assets/images/arecanut_ganoderma_rot_1793441530848.jpg';
+import rootGrubImg from '../assets/images/arecanut_root_grub_damage_1793441531276.jpg';
+import invalidLeafImg from '../assets/images/invalid_arecanut_leaf_1793441530665.jpg';
 
 interface DiagnosticViewProps {
   initialSampleKey?: string;
@@ -27,7 +31,7 @@ const SAMPLE_PRESETS: SamplePreset[] = [
     label: 'Healthy Arecanut Root',
     tag: 'Baseline Specimen',
     description: 'Excavated root ball with active ivory-white tips',
-    imageUrl: '/src/assets/images/arecanut_healthy_roots_1793441543488.jpg',
+    imageUrl: healthyRootImg,
     fileName: 'arecanut_healthy_roots_cpcri_vittal.jpg',
     targetClass: 'healthy_arecanut_roots',
     detectedSubject: 'arecanut_root',
@@ -41,7 +45,7 @@ const SAMPLE_PRESETS: SamplePreset[] = [
     label: 'Ganoderma Root Rot (Anabe Roga)',
     tag: 'Fungal Pathology',
     description: 'Black cortical decay with white fungal mycelial mat',
-    imageUrl: '/src/assets/images/arecanut_ganoderma_rot_1793441530848.jpg',
+    imageUrl: ganodermaRotImg,
     fileName: 'anabe_roga_ganoderma_specimen.jpg',
     targetClass: 'ganoderma_root_rot',
     detectedSubject: 'arecanut_root',
@@ -55,7 +59,7 @@ const SAMPLE_PRESETS: SamplePreset[] = [
     label: 'Root Grub Feeding Damage',
     tag: 'Insect Pest Damage',
     description: 'Severed root cylinders and chewed stump-ends by Leucopholis',
-    imageUrl: '/src/assets/images/arecanut_root_grub_damage_1793441531276.jpg',
+    imageUrl: rootGrubImg,
     fileName: 'white_grub_severed_roots_field.jpg',
     targetClass: 'root_grub_damage',
     detectedSubject: 'arecanut_root',
@@ -69,7 +73,7 @@ const SAMPLE_PRESETS: SamplePreset[] = [
     label: 'Arecanut Leaf (Non-Root Organ)',
     tag: 'Negative Control',
     description: 'Foliage photo testing automatic non-root rejection',
-    imageUrl: '/src/assets/images/invalid_arecanut_leaf_1793441530665.jpg',
+    imageUrl: invalidLeafImg,
     fileName: 'arecanut_palm_frond_leaf.jpg',
     targetClass: null,
     detectedSubject: 'leaf',
@@ -475,7 +479,7 @@ export const DiagnosticView: React.FC<DiagnosticViewProps> = ({ initialSampleKey
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Column: Image Preview & Trigger */}
         <div className="lg:col-span-6 space-y-4">
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-sm">
+          <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-2xl p-5 space-y-4 shadow-sm">
             <div className="flex items-center justify-between text-xs">
               <span className="font-semibold text-slate-700">
                 Uploaded Photograph Preview
@@ -529,7 +533,7 @@ export const DiagnosticView: React.FC<DiagnosticViewProps> = ({ initialSampleKey
               />
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="px-4 py-2 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+                className="px-4 py-2 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors cursor-pointer"
               >
                 Upload from Computer
               </button>
@@ -537,7 +541,7 @@ export const DiagnosticView: React.FC<DiagnosticViewProps> = ({ initialSampleKey
               <button
                 onClick={handleRunAnalysis}
                 disabled={isAnalyzing}
-                className="px-6 py-2.5 text-xs font-semibold text-white bg-emerald-700 hover:bg-emerald-800 disabled:bg-slate-400 rounded-lg shadow-sm transition-colors flex items-center gap-2"
+                className="px-6 py-2.5 text-xs font-semibold text-white bg-emerald-700 hover:bg-emerald-800 disabled:bg-slate-400 rounded-lg shadow-sm transition-colors flex items-center gap-2 cursor-pointer"
               >
                 <span>{isAnalyzing ? 'Running Pipeline...' : 'Analyze Root Specimen'}</span>
                 {!isAnalyzing && (
@@ -550,7 +554,7 @@ export const DiagnosticView: React.FC<DiagnosticViewProps> = ({ initialSampleKey
           </div>
 
           {/* 12-Stage Automated Pipeline Overview */}
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-3">
+          <div className="bg-white/85 backdrop-blur-md border border-slate-200/90 rounded-2xl p-5 space-y-3 shadow-sm">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-800">
                 12-Stage Automated Processing Pipeline

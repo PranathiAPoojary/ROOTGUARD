@@ -1,5 +1,7 @@
 import React from 'react';
 import { ViewMode } from '../types';
+import plantationBg from '../assets/images/arecanut_plantation_mist_1793443555451.jpg';
+import healthyRootImg from '../assets/images/arecanut_healthy_roots_1793441543488.jpg';
 
 interface HomeViewProps {
   onNavigate: (view: ViewMode) => void;
@@ -9,12 +11,31 @@ interface HomeViewProps {
 export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }) => {
   return (
     <div className="space-y-16 pb-16">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-white border-b border-slate-200 pt-12 pb-16 sm:pb-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            {/* Left Column: Headline and Scope */}
-            <div className="lg:col-span-7 space-y-6">
+      {/* Hero Section with Vibrant Plantation Backdrop */}
+      <section className="relative overflow-hidden border-b border-emerald-900/15 pt-8 pb-16 sm:pb-20">
+        {/* Natural Arecanut Plantation Landscape Backdrop - Full Clarity */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
+          <img
+            src={plantationBg}
+            alt="Arecanut palm plantation atmospheric landscape"
+            className="w-full h-full object-cover object-center opacity-95 filter contrast-105 saturate-110 scale-105"
+            referrerPolicy="no-referrer"
+          />
+          {/* Subtle atmosphere tint preserving authentic photo colors */}
+          <div className="absolute inset-0 bg-slate-900/10 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/25 via-transparent to-white/10" />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Plantation Agro-Climatic Belt Badge */}
+          <div className="mb-4 inline-flex items-center gap-2 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-emerald-900 border border-white/80 shadow-xs">
+            <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
+            <span>Coastal & Malnad Arecanut Belt (Shimoga & Dakshina Kannada)</span>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            {/* Left Column: Headline and Scope inside Frosted Glass Card for perfect readability */}
+            <div className="lg:col-span-7 space-y-6 bg-white/92 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-white/80 shadow-xl">
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-800">
                 <span>Areca catechu Pathology</span>
                 <span aria-hidden="true">·</span>
@@ -31,7 +52,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
               </p>
 
               {/* Strict Scope Alert Banner */}
-              <div className="p-4 bg-emerald-50/70 border border-emerald-200/80 rounded-xl text-xs text-emerald-900 leading-relaxed space-y-1">
+              <div className="p-4 bg-emerald-50/80 border border-emerald-200 rounded-xl text-xs text-emerald-900 leading-relaxed space-y-1">
                 <div className="font-semibold text-emerald-950 flex items-center gap-2">
                   <svg className="w-4 h-4 text-emerald-700 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -47,7 +68,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
               <div className="flex flex-wrap items-center gap-4 pt-2">
                 <button
                   onClick={() => onNavigate('diagnostic')}
-                  className="px-6 py-3 text-sm font-semibold text-white bg-emerald-700 hover:bg-emerald-800 rounded-lg shadow-sm transition-colors flex items-center gap-2"
+                  className="px-6 py-3 text-sm font-semibold text-white bg-emerald-700 hover:bg-emerald-800 rounded-lg shadow-sm transition-colors flex items-center gap-2 cursor-pointer"
                 >
                   <span>Get Started with Root Analysis</span>
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -57,7 +78,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
 
                 <button
                   onClick={() => onNavigate('diseases')}
-                  className="px-5 py-3 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+                  className="px-5 py-3 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors cursor-pointer"
                 >
                   Browse Disease Library
                 </button>
@@ -77,10 +98,10 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
 
             {/* Right Column: Specimen Showcase Card */}
             <div className="lg:col-span-5">
-              <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+              <div className="bg-white/92 backdrop-blur-md border border-white/80 rounded-3xl overflow-hidden shadow-xl">
                 <div className="relative aspect-[4/3] bg-slate-100">
                   <img
-                    src="/src/assets/images/arecanut_healthy_roots_1793441543488.jpg"
+                    src={healthyRootImg}
                     alt="Areca catechu healthy root specimen"
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
@@ -105,7 +126,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
                   <div className="pt-2 flex items-center gap-2">
                     <button
                       onClick={() => onSelectSample('healthy')}
-                      className="text-xs text-emerald-700 font-medium hover:text-emerald-800 transition-colors"
+                      className="text-xs text-emerald-700 font-medium hover:text-emerald-800 transition-colors cursor-pointer"
                     >
                       Test with this sample →
                     </button>
@@ -133,7 +154,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Step 1 */}
-          <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-4 hover:border-emerald-300 transition-colors">
+          <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-xl p-6 space-y-4 hover:border-emerald-300 transition-colors shadow-sm">
             <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-sm">
               01
             </div>
@@ -149,7 +170,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
           </div>
 
           {/* Step 2 */}
-          <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-4 hover:border-emerald-300 transition-colors">
+          <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-xl p-6 space-y-4 hover:border-emerald-300 transition-colors shadow-sm">
             <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-sm">
               02
             </div>
@@ -165,7 +186,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
           </div>
 
           {/* Step 3 */}
-          <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-4 hover:border-emerald-300 transition-colors">
+          <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-xl p-6 space-y-4 hover:border-emerald-300 transition-colors shadow-sm">
             <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-sm">
               03
             </div>
@@ -203,7 +224,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Card 1: Healthy */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-3">
+          <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-2xl p-5 space-y-3 shadow-sm hover:border-emerald-300 transition-all">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-emerald-700">Baseline Standard</span>
               <span className="text-xs text-slate-400">Class 01</span>
@@ -225,7 +246,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
           </div>
 
           {/* Card 2: Ganoderma */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-3">
+          <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-2xl p-5 space-y-3 shadow-sm hover:border-emerald-300 transition-all">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-rose-700">Basidiomycete Fungus</span>
               <span className="text-xs text-slate-400">Class 02</span>
@@ -247,7 +268,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
           </div>
 
           {/* Card 3: Fusarium */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-3">
+          <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-2xl p-5 space-y-3 shadow-sm hover:border-emerald-300 transition-all">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-amber-700">Soil-borne Fungal Decay</span>
               <span className="text-xs text-slate-400">Class 03</span>
@@ -269,7 +290,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
           </div>
 
           {/* Card 4: Yellow Leaf Disease */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-3">
+          <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-2xl p-5 space-y-3 shadow-sm hover:border-emerald-300 transition-all">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-amber-700">Phytoplasma Associated</span>
               <span className="text-xs text-slate-400">Class 04</span>
@@ -291,7 +312,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
           </div>
 
           {/* Card 5: Root Grub */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-3">
+          <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-2xl p-5 space-y-3 shadow-sm hover:border-emerald-300 transition-all">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-rose-700">Coleoptera Pest Damage</span>
               <span className="text-xs text-slate-400">Class 05</span>
@@ -313,7 +334,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
           </div>
 
           {/* Card 6: Nematode */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-3">
+          <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-2xl p-5 space-y-3 shadow-sm hover:border-emerald-300 transition-all">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-purple-700">Parasitic Nematodes</span>
               <span className="text-xs text-slate-400">Class 06</span>
