@@ -26,6 +26,14 @@ export interface AdaptiveGridAnalysis {
   patches: GridPatch[];
 }
 
+export type DiseaseClassKey =
+  | 'bud_rot_phytophthora'
+  | 'ganoderma_lucidum'
+  | 'yellow_leaf_root_rot'
+  | 'root_grubs_plant_parasitic'
+  | 'mahali_koleroga_fruit_rot'
+  | 'healthy_arecanut';
+
 export interface DiseaseInfo {
   disease_key: string;
   name: string;

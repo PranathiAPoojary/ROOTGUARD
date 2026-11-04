@@ -96,11 +96,24 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate }) => {
           </button>
         </nav>
 
-        {/* Zone 3: 1 primary action */}
-        <div className="flex items-center gap-3 shrink-0">
+        {/* Zone 3: Actions (Export for VS Code + Primary Action) */}
+        <div className="flex items-center gap-2.5 shrink-0">
+          <a
+            href="/api/export/zip"
+            download="rootguard-project.zip"
+            className="px-3 py-2 text-xs font-semibold text-slate-700 hover:text-emerald-950 bg-white/90 hover:bg-emerald-50 border border-slate-300 hover:border-emerald-400 rounded-lg transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
+            title="Download full project archive to open in VS Code"
+          >
+            <svg className="w-4 h-4 text-emerald-700 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            <span className="hidden sm:inline">Export for VS Code</span>
+            <span className="sm:hidden">Export</span>
+          </a>
+
           <button
             onClick={() => onNavigate('diagnostic')}
-            className="px-4 py-2 text-sm font-medium text-white bg-emerald-700 rounded-lg hover:bg-emerald-800 transition-colors whitespace-nowrap shrink-0 shadow-sm"
+            className="px-4 py-2 text-sm font-medium text-white bg-emerald-700 rounded-lg hover:bg-emerald-800 transition-colors whitespace-nowrap shrink-0 shadow-sm cursor-pointer"
           >
             Analyze Root
           </button>

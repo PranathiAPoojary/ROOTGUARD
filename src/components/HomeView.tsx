@@ -65,7 +65,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-4 pt-2">
+              <div className="flex flex-wrap items-center gap-3 pt-2">
                 <button
                   onClick={() => onNavigate('diagnostic')}
                   className="px-6 py-3 text-sm font-semibold text-white bg-emerald-700 hover:bg-emerald-800 rounded-lg shadow-sm transition-colors flex items-center gap-2 cursor-pointer"
@@ -75,6 +75,18 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                   </svg>
                 </button>
+
+                <a
+                  href="/api/export/zip"
+                  download="rootguard-project.zip"
+                  className="px-5 py-3 text-sm font-semibold text-emerald-950 bg-emerald-100/90 hover:bg-emerald-200 border border-emerald-300 rounded-lg transition-colors flex items-center gap-2 cursor-pointer shadow-xs"
+                  title="Download complete project archive to open in VS Code"
+                >
+                  <svg className="w-4 h-4 text-emerald-800 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  <span>Export for VS Code (ZIP)</span>
+                </a>
 
                 <button
                   onClick={() => onNavigate('diseases')}
@@ -211,12 +223,12 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
               Taxonomic Classification
             </div>
             <h2 className="text-2xl font-bold tracking-tight text-slate-900 mt-1">
-              Six Supported Root Diagnostic Classes
+              Six Supported Diagnostic Classes
             </h2>
           </div>
           <button
             onClick={() => onNavigate('diseases')}
-            className="text-sm font-medium text-emerald-700 hover:text-emerald-800 transition-colors whitespace-nowrap"
+            className="text-sm font-medium text-emerald-700 hover:text-emerald-800 transition-colors whitespace-nowrap cursor-pointer"
           >
             Explore detailed pathology guides →
           </button>
@@ -226,7 +238,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
           {/* Card 1: Healthy */}
           <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-2xl p-5 space-y-3 shadow-sm hover:border-emerald-300 transition-all">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-emerald-700">Baseline Standard</span>
+              <span className="text-xs font-medium text-emerald-700">Baseline Control</span>
               <span className="text-xs text-slate-400">Class 01</span>
             </div>
             <h3 className="text-base font-semibold text-slate-900">
@@ -238,117 +250,117 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
             <div className="pt-2">
               <button
                 onClick={() => onSelectSample('healthy')}
-                className="text-xs font-medium text-emerald-700 hover:underline"
+                className="text-xs font-medium text-emerald-700 hover:underline cursor-pointer"
               >
                 Load test sample →
               </button>
             </div>
           </div>
 
-          {/* Card 2: Ganoderma */}
+          {/* Card 2: Bud rot: Phytophthora arecae */}
           <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-2xl p-5 space-y-3 shadow-sm hover:border-emerald-300 transition-all">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-rose-700">Basidiomycete Fungus</span>
+              <span className="text-xs font-medium text-rose-700">Oomycete Fungus</span>
               <span className="text-xs text-slate-400">Class 02</span>
             </div>
             <h3 className="text-base font-semibold text-slate-900">
-              Ganoderma Root & Foot Rot (Anabe Roga)
+              Bud rot: Phytophthora arecae
             </h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Blackened brittle cortical rot with superficial white mycelial strands. Causes progressive crown wilting and palm collapse.
+              Collar zone water-soaked cortical rot and rapid feeder dieback. Accompanied by central spear leaf rotting and spindle detachment.
+            </p>
+            <div className="pt-2">
+              <button
+                onClick={() => onSelectSample('bud_rot')}
+                className="text-xs font-medium text-emerald-700 hover:underline cursor-pointer"
+              >
+                Load test sample →
+              </button>
+            </div>
+          </div>
+
+          {/* Card 3: Gandoderma lucidum */}
+          <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-2xl p-5 space-y-3 shadow-sm hover:border-emerald-300 transition-all">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-rose-700">Basidiomycete Fungus</span>
+              <span className="text-xs text-slate-400">Class 03</span>
+            </div>
+            <h3 className="text-base font-semibold text-slate-900">
+              Gandoderma lucidum (Anabe Roga)
+            </h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Blackened brittle cortical rot with superficial white mycelial strands and bracket conks. Causes crown tapering and palm collapse.
             </p>
             <div className="pt-2">
               <button
                 onClick={() => onSelectSample('ganoderma')}
-                className="text-xs font-medium text-emerald-700 hover:underline"
+                className="text-xs font-medium text-emerald-700 hover:underline cursor-pointer"
               >
                 Load test sample →
               </button>
             </div>
           </div>
 
-          {/* Card 3: Fusarium */}
+          {/* Card 4: yellow leaf (Root rot) */}
           <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-2xl p-5 space-y-3 shadow-sm hover:border-emerald-300 transition-all">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-amber-700">Soil-borne Fungal Decay</span>
-              <span className="text-xs text-slate-400">Class 03</span>
-            </div>
-            <h3 className="text-base font-semibold text-slate-900">
-              Fusarium Root Decay
-            </h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Soft reddish-brown rot where outer cortex easily sloughs off. Internal vascular stele shows characteristic dark brown streaking.
-            </p>
-            <div className="pt-2">
-              <button
-                onClick={() => onSelectSample('fusarium')}
-                className="text-xs font-medium text-emerald-700 hover:underline"
-              >
-                Load test sample →
-              </button>
-            </div>
-          </div>
-
-          {/* Card 4: Yellow Leaf Disease */}
-          <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-2xl p-5 space-y-3 shadow-sm hover:border-emerald-300 transition-all">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-amber-700">Phytoplasma Associated</span>
+              <span className="text-xs font-medium text-amber-700">Root Rot Complex</span>
               <span className="text-xs text-slate-400">Class 04</span>
             </div>
             <h3 className="text-base font-semibold text-slate-900">
-              Yellow Leaf Root Damage
+              yellow leaf (Root rot)
             </h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Extensive feeder tip necrosis, spongy disintegrated fibrous root net, and impaired nutrient absorption accompanying crown yellowing.
+              Extensive feeder rootlet tip dieback, spongy disintegrated fibrous root net, and severe root rot complex with crown chlorosis.
             </p>
             <div className="pt-2">
               <button
                 onClick={() => onSelectSample('yellow_leaf')}
-                className="text-xs font-medium text-emerald-700 hover:underline"
+                className="text-xs font-medium text-emerald-700 hover:underline cursor-pointer"
               >
                 Load test sample →
               </button>
             </div>
           </div>
 
-          {/* Card 5: Root Grub */}
+          {/* Card 5: Root grubs and Palnt -parasitic */}
           <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-2xl p-5 space-y-3 shadow-sm hover:border-emerald-300 transition-all">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-rose-700">Coleoptera Pest Damage</span>
+              <span className="text-xs font-medium text-rose-700">Insect Pests & Nematodes</span>
               <span className="text-xs text-slate-400">Class 05</span>
             </div>
             <h3 className="text-base font-semibold text-slate-900">
-              Root Grub Damage (White Grub)
+              Root grubs and Palnt -parasitic
             </h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Violently severed and chewed root cylinders with ragged, blunt stump-ends. Causes palm loosening and lodging under heavy wind.
+              Mechanically severed roots with ragged stump-ends from white grubs, combined with elongated dark cortical burrowing nematode lesions.
             </p>
             <div className="pt-2">
               <button
-                onClick={() => onSelectSample('root_grub')}
-                className="text-xs font-medium text-emerald-700 hover:underline"
+                onClick={() => onSelectSample('root_grubs')}
+                className="text-xs font-medium text-emerald-700 hover:underline cursor-pointer"
               >
                 Load test sample →
               </button>
             </div>
           </div>
 
-          {/* Card 6: Nematode */}
+          {/* Card 6: Mahali / kolerogo/ fruit rot: Phytophthora arecae */}
           <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-2xl p-5 space-y-3 shadow-sm hover:border-emerald-300 transition-all">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-purple-700">Parasitic Nematodes</span>
+              <span className="text-xs font-medium text-purple-700">Monsoon Oomycete Rot</span>
               <span className="text-xs text-slate-400">Class 06</span>
             </div>
             <h3 className="text-base font-semibold text-slate-900">
-              Nematode-Associated Damage
+              Mahali / kolerogo/ fruit rot: Phytophthora arecae
             </h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Elongate reddish-black cortical lesions (burrowing nematode) and micro-galling (root-knot nematode) creating fungal ingress pathways.
+              Catastrophic premature nut rot & shed ("Mahali" drop) with water-soaked zoosporic wash-off rotting collar & surface root cortex.
             </p>
             <div className="pt-2">
               <button
-                onClick={() => onSelectSample('nematode')}
-                className="text-xs font-medium text-emerald-700 hover:underline"
+                onClick={() => onSelectSample('mahali_fruit_rot')}
+                className="text-xs font-medium text-emerald-700 hover:underline cursor-pointer"
               >
                 Load test sample →
               </button>
