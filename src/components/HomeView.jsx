@@ -1,14 +1,8 @@
 import React from 'react';
-import { ViewMode } from '../types';
 import plantationBg from '../assets/images/arecanut_plantation_mist_1793443555451.jpg';
 import healthyRootImg from '../assets/images/arecanut_healthy_roots_1793441543488.jpg';
 
-interface HomeViewProps {
-  onNavigate: (view: ViewMode) => void;
-  onSelectSample: (sampleKey: string) => void;
-}
-
-export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }) => {
+export function HomeView({ onNavigate, onSelectSample }) {
   return (
     <div className="space-y-16 pb-16">
       {/* Hero Section with Vibrant Plantation Backdrop */}
@@ -27,14 +21,14 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Plantation Agro-Climatic Belt Badge */}
+          {/* Agro-Climatic Belt Badge */}
           <div className="mb-4 inline-flex items-center gap-2 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-emerald-900 border border-white/80 shadow-xs">
             <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
-            <span>Coastal & Malnad Arecanut Belt (Shimoga & Dakshina Kannada)</span>
+            <span>Coastal & Malnad Arecanut Belt (Shimoga & Dakshina Kannada) · 100% JavaScript Implementation</span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            {/* Left Column: Headline and Scope inside Frosted Glass Card for perfect readability */}
+            {/* Left Column: Headline and Scope inside Frosted Glass Card */}
             <div className="lg:col-span-7 space-y-6 bg-white/92 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-white/80 shadow-xl">
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-800">
                 <span>Areca catechu Pathology</span>
@@ -42,7 +36,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
                 <span>ICAR-CPCRI Referenced Standards</span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 leading-tight" style={{ textWrap: 'balance' }}>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 leading-tight">
                 AI-Based Early Prediction of Arecanut Root Diseases
               </h1>
 
@@ -64,7 +58,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
                 </p>
               </div>
 
-              {/* Action Buttons */}
+              {/* Action Buttons with Direct Export */}
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <button
                   onClick={() => onNavigate('diagnostic')}
@@ -78,21 +72,21 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
 
                 <a
                   href="/api/export/zip"
-                  download="rootguard-project.zip"
-                  className="px-5 py-3 text-sm font-semibold text-emerald-950 bg-emerald-100/90 hover:bg-emerald-200 border border-emerald-300 rounded-lg transition-colors flex items-center gap-2 cursor-pointer shadow-xs"
-                  title="Download complete project archive to open in VS Code"
+                  download="rootguard-javascript-project.zip"
+                  className="px-5 py-3 text-sm font-bold text-amber-950 bg-amber-200 hover:bg-amber-300 border border-amber-400 rounded-lg shadow-xs transition-all flex items-center gap-2 cursor-pointer hover:scale-105"
+                  title="Download complete project ZIP to open in VS Code"
                 >
-                  <svg className="w-4 h-4 text-emerald-800 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-4 h-4 text-amber-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                   </svg>
-                  <span>Export for VS Code (ZIP)</span>
+                  <span>Download for VS Code</span>
                 </a>
 
                 <button
                   onClick={() => onNavigate('diseases')}
-                  className="px-5 py-3 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors cursor-pointer"
+                  className="px-4 py-3 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors cursor-pointer"
                 >
-                  Browse Disease Library
+                  Browse Library
                 </button>
               </div>
 
@@ -126,13 +120,13 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
                 <div className="p-5 space-y-3">
                   <div className="flex items-center justify-between text-xs text-slate-500">
                     <span>Field Diagnosis Benchmark</span>
-                    <span className="font-mono text-emerald-700 font-semibold">94.2% Validation Accuracy</span>
+                    <span className="font-mono text-emerald-700 font-semibold">94.8% Validation Accuracy</span>
                   </div>
                   <h2 className="text-base font-semibold text-slate-900">
                     Close-Up Uprooted Root Diagnostics
                   </h2>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    Examines cortical discoloration, vascular brown necrosis, mechanical severance, and galling.
+                    Examines cortical discoloration, vascular necrosis, white grub mechanical severance, and nematode lesions.
                     Automated background removal ensures accurate analysis regardless of soil residues.
                   </p>
                   <div className="pt-2 flex items-center gap-2">
@@ -150,77 +144,41 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
         </div>
       </section>
 
-      {/* How It Works Section */}
+      {/* VS Code Quick Export Banner */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto space-y-3 mb-12">
-          <div className="text-xs font-semibold uppercase tracking-wider text-emerald-800">
-            Automated Diagnostic Pipeline
-          </div>
-          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
-            How RootGuard Works
-          </h2>
-          <p className="text-sm sm:text-base text-slate-600">
-            Farmers simply upload a close-up photo of the uprooted root zone. All computer vision and pathological reasoning happen automatically.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Step 1 */}
-          <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-xl p-6 space-y-4 hover:border-emerald-300 transition-colors shadow-sm">
-            <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-sm">
-              01
+        <div className="bg-amber-50/95 backdrop-blur-md border-2 border-amber-300 rounded-2xl p-6 sm:p-7 shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div className="space-y-2 max-w-3xl">
+            <div className="inline-flex items-center gap-2 bg-amber-200 text-amber-900 px-2.5 py-0.5 rounded-full text-xs font-extrabold uppercase tracking-wide">
+              <span>Ready for Visual Studio Code</span>
             </div>
-            <h3 className="text-lg font-semibold text-slate-900">
-              Specimen Validation
+            <h3 className="text-xl font-bold text-amber-950">
+              Download & Open in Visual Studio Code (JavaScript)
             </h3>
-            <p className="text-sm text-slate-600 leading-relaxed">
-              Verifies resolution, blur, and illumination. The out-of-distribution classifier confirms monocot arecanut fibrous root morphology and automatically rejects leaves, fruits, or unsupported crops.
+            <p className="text-xs sm:text-sm text-amber-900/90 leading-relaxed">
+              This project is built using <strong>pure JavaScript (.jsx / .js)</strong> for your college mini project submission.
+              Click the button below to download the complete ZIP archive. Unzip it, open the folder in <strong>VS Code</strong>, and run <code className="bg-amber-200/80 px-1.5 py-0.5 rounded font-mono font-bold text-xs">npm install</code> and <code className="bg-amber-200/80 px-1.5 py-0.5 rounded font-mono font-bold text-xs">npm run dev</code>.
             </p>
-            <div className="pt-2 text-xs text-slate-500">
-              Automated quality and botanical organ verification
-            </div>
           </div>
 
-          {/* Step 2 */}
-          <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-xl p-6 space-y-4 hover:border-emerald-300 transition-colors shadow-sm">
-            <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-sm">
-              02
-            </div>
-            <h3 className="text-lg font-semibold text-slate-900">
-              Adaptive Grid & Feature Analysis
-            </h3>
-            <p className="text-sm text-slate-600 leading-relaxed">
-              The root region is segmented from extraneous soil background and partitioned into an adaptive 3x3 grid. Each patch is analyzed for necrotic lesions, fungal mycelium, and root grub gnaw marks.
-            </p>
-            <div className="pt-2 text-xs text-slate-500">
-              Patch-level anomaly scoring & regional pooling
-            </div>
-          </div>
-
-          {/* Step 3 */}
-          <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-xl p-6 space-y-4 hover:border-emerald-300 transition-colors shadow-sm">
-            <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-sm">
-              03
-            </div>
-            <h3 className="text-lg font-semibold text-slate-900">
-              Severity & Prescription
-            </h3>
-            <p className="text-sm text-slate-600 leading-relaxed">
-              Calculates independent disease confidence and risk severity (Low, Moderate, High, or Healthy) with documented reasons. Delivers actionable ICAR-CPCRI agronomic and biocontrol prescriptions.
-            </p>
-            <div className="pt-2 text-xs text-slate-500">
-              Biological controls, cultural measures & safety protocols
-            </div>
-          </div>
+          <a
+            href="/api/export/zip"
+            download="rootguard-javascript-project.zip"
+            className="px-6 py-3.5 bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-extrabold text-sm rounded-xl shadow-md transition-all flex items-center gap-2.5 whitespace-nowrap shrink-0 hover:shadow-lg cursor-pointer"
+          >
+            <svg className="w-5 h-5 text-slate-950 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            <span>Download Project ZIP</span>
+          </a>
         </div>
       </section>
 
-      {/* Six Root Conditions Card Grid */}
+      {/* Six Supported Classes Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-8">
           <div>
             <div className="text-xs font-semibold uppercase tracking-wider text-emerald-800">
-              Taxonomic Classification
+              Dataset Taxonomy
             </div>
             <h2 className="text-2xl font-bold tracking-tight text-slate-900 mt-1">
               Six Supported Diagnostic Classes
@@ -239,7 +197,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
           <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-2xl p-5 space-y-3 shadow-sm hover:border-emerald-300 transition-all">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-emerald-700">Baseline Control</span>
-              <span className="text-xs text-slate-400">Class 01</span>
+              <span className="text-xs text-slate-400 font-mono">Class 01</span>
             </div>
             <h3 className="text-base font-semibold text-slate-900">
               Healthy Arecanut Roots
@@ -257,11 +215,11 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
             </div>
           </div>
 
-          {/* Card 2: Bud rot: Phytophthora arecae */}
+          {/* Card 2: Bud rot */}
           <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-2xl p-5 space-y-3 shadow-sm hover:border-emerald-300 transition-all">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-rose-700">Oomycete Fungus</span>
-              <span className="text-xs text-slate-400">Class 02</span>
+              <span className="text-xs text-slate-400 font-mono">Class 02</span>
             </div>
             <h3 className="text-base font-semibold text-slate-900">
               Bud rot: Phytophthora arecae
@@ -283,7 +241,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
           <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-2xl p-5 space-y-3 shadow-sm hover:border-emerald-300 transition-all">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-rose-700">Basidiomycete Fungus</span>
-              <span className="text-xs text-slate-400">Class 03</span>
+              <span className="text-xs text-slate-400 font-mono">Class 03</span>
             </div>
             <h3 className="text-base font-semibold text-slate-900">
               Gandoderma lucidum (Anabe Roga)
@@ -305,7 +263,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
           <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-2xl p-5 space-y-3 shadow-sm hover:border-emerald-300 transition-all">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-amber-700">Root Rot Complex</span>
-              <span className="text-xs text-slate-400">Class 04</span>
+              <span className="text-xs text-slate-400 font-mono">Class 04</span>
             </div>
             <h3 className="text-base font-semibold text-slate-900">
               yellow leaf (Root rot)
@@ -327,7 +285,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
           <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-2xl p-5 space-y-3 shadow-sm hover:border-emerald-300 transition-all">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-rose-700">Insect Pests & Nematodes</span>
-              <span className="text-xs text-slate-400">Class 05</span>
+              <span className="text-xs text-slate-400 font-mono">Class 05</span>
             </div>
             <h3 className="text-base font-semibold text-slate-900">
               Root grubs and Palnt -parasitic
@@ -349,7 +307,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
           <div className="bg-white/92 backdrop-blur-md border border-slate-200/90 rounded-2xl p-5 space-y-3 shadow-sm hover:border-emerald-300 transition-all">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-purple-700">Monsoon Oomycete Rot</span>
-              <span className="text-xs text-slate-400">Class 06</span>
+              <span className="text-xs text-slate-400 font-mono">Class 06</span>
             </div>
             <h3 className="text-base font-semibold text-slate-900">
               Mahali / kolerogo/ fruit rot: Phytophthora arecae
@@ -370,4 +328,4 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectSample }
       </section>
     </div>
   );
-};
+}

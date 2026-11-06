@@ -1,19 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { DiseaseInfo, ViewMode } from '../types';
 
-interface DiseaseLibraryViewProps {
-  onNavigate: (view: ViewMode) => void;
-  onSelectSample: (sampleKey: string) => void;
-}
-
-export const DiseaseLibraryView: React.FC<DiseaseLibraryViewProps> = ({
-  onNavigate,
-  onSelectSample,
-}) => {
-  const [diseases, setDiseases] = useState<DiseaseInfo[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [expandedKey, setExpandedKey] = useState<string | null>(null);
+export function DiseaseLibraryView({ onNavigate, onSelectSample }) {
+  const [diseases, setDiseases] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [expandedKey, setExpandedKey] = useState(null);
 
   useEffect(() => {
     fetch('/api/diseases')
@@ -31,11 +22,11 @@ export const DiseaseLibraryView: React.FC<DiseaseLibraryViewProps> = ({
 
   const categories = [
     { key: 'all', label: 'All Conditions' },
-    { key: 'Fungal', label: 'Fungal Diseases' },
-    { key: 'Phytoplasma', label: 'Phytoplasma' },
-    { key: 'Pest', label: 'Insect Pests' },
-    { key: 'Nematode', label: 'Nematodes' },
-    { key: 'Healthy', label: 'Healthy Roots' },
+    { key: 'Oomycete', label: 'Oomycete Rots (Phytophthora)' },
+    { key: 'Basidiomycete', label: 'Basidiomycete (Ganoderma)' },
+    { key: 'Phytoplasma', label: 'Phytoplasma & Root Rot' },
+    { key: 'Pest', label: 'Root Grubs & Nematodes' },
+    { key: 'Healthy', label: 'Healthy Baseline' },
   ];
 
   const filteredDiseases = diseases.filter((d) => {
@@ -56,7 +47,7 @@ export const DiseaseLibraryView: React.FC<DiseaseLibraryViewProps> = ({
         <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-800">
           <span>Authoritative Pathology Compendium</span>
           <span aria-hidden="true">·</span>
-          <span>ICAR-CPCRI & TNAU Grounded</span>
+          <span>ICAR-CPCRI & TNAU Grounded · JavaScript Module</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
           Arecanut Root Disease & Pest Library
@@ -68,13 +59,14 @@ export const DiseaseLibraryView: React.FC<DiseaseLibraryViewProps> = ({
 
       {/* Filter and Search Bar */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-        {/* Category Filter Segmented Control */}
+        {/* Category Filter */}
         <div className="flex flex-wrap items-center gap-1 p-1 bg-slate-100 rounded-lg text-xs font-medium w-full sm:w-auto">
           {categories.map((c) => (
             <button
               key={c.key}
+              type="button"
               onClick={() => setSelectedCategory(c.key)}
-              className={`px-3 py-1.5 rounded-md transition-colors ${
+              className={`px-3 py-1.5 rounded-md transition-colors cursor-pointer ${
                 selectedCategory === c.key
                   ? 'bg-white text-slate-900 shadow-sm font-semibold'
                   : 'text-slate-600 hover:text-slate-900'
@@ -109,7 +101,7 @@ export const DiseaseLibraryView: React.FC<DiseaseLibraryViewProps> = ({
       <div className="space-y-4">
         {filteredDiseases.map((d) => {
           const isExpanded = expandedKey === d.disease_key;
-          const isHealthy = d.disease_key === 'healthy_arecanut_roots';
+          const isHealthy = d.disease_key === 'healthy_arecanut' || d.disease_key === 'healthy_arecanut_roots';
 
           return (
             <div
@@ -124,8 +116,9 @@ export const DiseaseLibraryView: React.FC<DiseaseLibraryViewProps> = ({
             >
               {/* Card Header Accordion Trigger */}
               <button
+                type="button"
                 onClick={() => setExpandedKey(isExpanded ? null : d.disease_key)}
-                className="w-full p-5 sm:p-6 text-left flex items-start sm:items-center justify-between gap-4"
+                className="w-full p-5 sm:p-6 text-left flex items-start sm:items-center justify-between gap-4 cursor-pointer"
               >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 text-xs">
@@ -141,7 +134,7 @@ export const DiseaseLibraryView: React.FC<DiseaseLibraryViewProps> = ({
                         <span aria-hidden="true" className="text-slate-300">
                           ·
                         </span>
-                        <span className="text-slate-500">{d.vernacular_name}</span>
+                        <span className="text-slate-500 font-medium">{d.vernacular_name}</span>
                       </>
                     )}
                   </div>
@@ -237,14 +230,18 @@ export const DiseaseLibraryView: React.FC<DiseaseLibraryViewProps> = ({
                     </div>
 
                     <button
+                      type="button"
                       onClick={() => {
                         onNavigate('diagnostic');
-                        if (d.disease_key === 'healthy_arecanut_roots') onSelectSample('healthy');
-                        else if (d.disease_key === 'ganoderma_root_rot') onSelectSample('ganoderma');
-                        else if (d.disease_key === 'root_grub_damage') onSelectSample('root_grub');
+                        if (d.disease_key.includes('healthy')) onSelectSample('healthy');
+                        else if (d.disease_key.includes('bud_rot')) onSelectSample('bud_rot');
+                        else if (d.disease_key.includes('ganoderma')) onSelectSample('ganoderma');
+                        else if (d.disease_key.includes('yellow')) onSelectSample('yellow_leaf');
+                        else if (d.disease_key.includes('grub') || d.disease_key.includes('nematode')) onSelectSample('root_grubs');
+                        else if (d.disease_key.includes('mahali') || d.disease_key.includes('koleroga')) onSelectSample('mahali_fruit_rot');
                         else onSelectSample('healthy');
                       }}
-                      className="text-emerald-700 hover:text-emerald-800 font-semibold"
+                      className="text-emerald-700 hover:text-emerald-800 font-semibold cursor-pointer"
                     >
                       Test in Diagnostic Console →
                     </button>
@@ -257,4 +254,4 @@ export const DiseaseLibraryView: React.FC<DiseaseLibraryViewProps> = ({
       </div>
     </div>
   );
-};
+}

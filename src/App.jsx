@@ -1,32 +1,32 @@
 /**
  * ROOTGUARD - AI-Based Early Prediction of Arecanut Root Diseases
  * Academic Engineering Mini-Project
+ * Pure JavaScript Frontend (.jsx)
  */
 
 import React, { useState } from 'react';
-import { ViewMode } from './types';
-import { Navbar } from './components/Navbar';
-import { HomeView } from './components/HomeView';
-import { DiagnosticView } from './components/DiagnosticView';
-import { DiseaseLibraryView } from './components/DiseaseLibraryView';
-import { HistoryView } from './components/HistoryView';
-import { ResearchMetricsView } from './components/ResearchMetricsView';
-import { AboutView } from './components/AboutView';
-import { Footer } from './components/Footer';
+import { Navbar } from './components/Navbar.jsx';
+import { HomeView } from './components/HomeView.jsx';
+import { DiagnosticView } from './components/DiagnosticView.jsx';
+import { DiseaseLibraryView } from './components/DiseaseLibraryView.jsx';
+import { HistoryView } from './components/HistoryView.jsx';
+import { ResearchMetricsView } from './components/ResearchMetricsView.jsx';
+import { AboutView } from './components/AboutView.jsx';
+import { Footer } from './components/Footer.jsx';
 import plantationBg from './assets/images/arecanut_plantation_mist_1793443555451.jpg';
 
 export default function App() {
-  const [currentView, setCurrentView] = useState<ViewMode>('home');
-  const [selectedSampleKey, setSelectedSampleKey] = useState<string>('healthy');
-  const [backdropMode, setBackdropMode] = useState<'vibrant' | 'full' | 'subtle'>('vibrant');
+  const [currentView, setCurrentView] = useState('home');
+  const [selectedSampleKey, setSelectedSampleKey] = useState('healthy');
+  const [backdropMode, setBackdropMode] = useState('vibrant');
 
-  const handleSelectSample = (sampleKey: string) => {
+  const handleSelectSample = (sampleKey) => {
     setSelectedSampleKey(sampleKey);
     setCurrentView('diagnostic');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleNavigate = (view: ViewMode) => {
+  const handleNavigate = (view) => {
     setCurrentView(view);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -47,7 +47,7 @@ export default function App() {
           }`}
           referrerPolicy="no-referrer"
         />
-        {/* Subtle, breathable scrim preserving authentic green palm trees, winding red soil path, and morning mist */}
+        {/* Subtle scrim preserving authentic green palm trees, winding red soil path, and morning mist */}
         <div className="absolute inset-0 bg-slate-900/10 mix-blend-multiply" />
         <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-slate-900/25" />
       </div>
@@ -61,6 +61,7 @@ export default function App() {
         <span className="text-slate-700 font-semibold">Plantation Backdrop:</span>
         <div className="flex items-center gap-1 bg-slate-100/90 p-0.5 rounded-full border border-slate-200">
           <button
+            type="button"
             onClick={() => setBackdropMode('vibrant')}
             className={`px-2.5 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer ${
               backdropMode === 'vibrant'
@@ -72,6 +73,7 @@ export default function App() {
             Vibrant (85%)
           </button>
           <button
+            type="button"
             onClick={() => setBackdropMode('full')}
             className={`px-2.5 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer ${
               backdropMode === 'full'
@@ -83,6 +85,7 @@ export default function App() {
             Full View (100%)
           </button>
           <button
+            type="button"
             onClick={() => setBackdropMode('subtle')}
             className={`px-2.5 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer ${
               backdropMode === 'subtle'
